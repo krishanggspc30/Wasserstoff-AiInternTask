@@ -1,0 +1,161 @@
+<!-- <!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>What Beats Rock - Test UI</title>
+</head>
+<body>
+  <h1>🪨 What Beats Rock? 🕹️</h1>
+  <label>Session ID: <input id="session" value="demo-session"></label><br><br>
+  <label>Guess: <input id="guess" /></label><br><br>
+  <label>Persona: <input id="persona" value="default" /></label><br><br>
+  <button onclick="makeGuess()">Submit Guess</button>
+  
+  <pre id="result"></pre>
+
+  <script>
+    async function makeGuess() {
+      const guess = document.getElementById('guess').value;
+      const session_id = document.getElementById('session').value;
+      const persona = document.getElementById('persona').value;
+
+      const res = await fetch("/guess", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ guess, session_id, persona })
+      });
+
+      const data = await res.json();
+      document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html> 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>What Beats Rock</title>
+</head>
+<body>
+  <h1>What Beats Rock Game</h1>
+  <button onclick="createSession()">Start Game</button>
+  <input type="text" id="guessInput" placeholder="Enter your guess..." />
+  <button onclick="submitGuess()">Submit Guess</button>
+  
+  <p id="result"></p>
+  <p id="score"></p>
+  
+  <script>
+    let sessionId = "";
+
+    async function createSession() {
+      const res = await fetch("/sessions", { method: "POST" });
+      const data = await res.json();
+      sessionId = data.session_id;
+      document.getElementById("result").innerText = "Session started!";
+    }
+
+    async function submitGuess() {
+      const guess = document.getElementById("guessInput").value;
+      const res = await fetch("/guess", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: sessionId, guess: guess, persona: "default" })
+      });
+      const data = await res.json();
+      document.getElementById("result").innerText = data.result || data.detail;
+      document.getElementById("score").innerText = data.score ? "Score: " + data.score : "";
+    }
+  </script>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>What Beats Rock</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 2rem;
+      background-color: #f0f0f0;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    input, button {
+      padding: 0.6rem 1rem;
+      margin: 0.5rem;
+      font-size: 1rem;
+    }
+
+    #result, #score {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 What Beats Rock?</h1>
+
+  <button onclick="startGame()">Start Game</button><br/>
+
+  <input id="guessInput" type="text" placeholder="Enter your guess..." />
+  <button onclick="submitGuess()">Submit Guess</button>
+
+  <div id="result"></div>
+  <div id="score"></div>
+
+  <script>
+    let sessionId = null;
+
+    async function startGame() {
+      const res = await fetch("/sessions", { method: "POST" });
+      const data = await res.json();
+      sessionId = data.session_id;
+      document.getElementById("result").innerText = "✅ Game session started!";
+      document.getElementById("score").innerText = "";
+    }
+
+    async function submitGuess() {
+      const guess = document.getElementById("guessInput").value.trim();
+      if (!sessionId) {
+        alert("Please start the game first.");
+        return;
+      }
+
+      if (!guess) {
+        alert("Please enter a guess.");
+        return;
+      }
+
+      const res = await fetch("/guess", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: sessionId,
+          guess: guess,
+          persona: "default"
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        document.getElementById("result").innerText = data.result;
+        document.getElementById("score").innerText = "🏆 Score: " + data.score;
+      } else {
+        document.getElementById("result").innerText = "❌ " + (data.detail || "Error occurred.");
+      }
+
+      document.getElementById("guessInput").value = "";
+    }
+  </script>
+</body>
+</html>

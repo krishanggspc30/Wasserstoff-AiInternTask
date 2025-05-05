@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+httpx
+asyncpg
+aioredis
+better_profanity
+python-dotenv
+redis
+dotenv
+pydantic
+pydantic[email]
